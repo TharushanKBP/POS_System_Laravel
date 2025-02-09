@@ -87,19 +87,26 @@ class UsersController extends Controller
         $user->syncRoles($request->role);
 
         if ($request->has('image')) {
-            $tempFile = Upload::where('folder', $request->image)->first();
+            //$tempFile = Upload::where('folder', $request->image)->first();
 
             if ($user->getFirstMedia('avatars')) {
                 $user->getFirstMedia('avatars')->delete();
             }
 
-            if ($tempFile) {
-                $user->addMedia(Storage::path('public/temp/' . $request->image . '/' . $tempFile->filename))->toMediaCollection('avatars');
+            // if ($tempFile) {
+            //     $user->addMedia(Storage::path('public/temp/' . $request->image . '/' . $tempFile->filename))->toMediaCollection('avatars');
 
-                Storage::deleteDirectory('public/temp/' . $request->image);
-                $tempFile->delete();
-            }
+            //     Storage::deleteDirectory('public/temp/' . $request->image);
+            //     $tempFile->delete();
+            // }
+
+            $avatarPath = $request->file('image')->store('avatars', 'public');
+            $user->addMedia(Storage::path($avatarPath))->toMediaCollection('avatars');
+
+
         }
+
+        $user ->refresh();
 
         toast("User Updated & Assigned '$request->role' Role!", 'info');
 
