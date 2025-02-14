@@ -30,6 +30,9 @@ class CreateProductsTable extends Migration
             $table->string('image')->nullable();
             $table->foreign('category_id')->references('id')->on('categories')->restrictOnDelete();
             $table->timestamps();
+            $table->date('product_mf_date')->nullable();
+            $table->date('product_exp_date')->nullable();
+
         });
     }
 

@@ -20,7 +20,7 @@
                 <div class="card">
                     <div class="card-body">
                         <a href="{{ route('products.create') }}" class="btn btn-primary">
-                            Add Product <i class="bi bi-plus"></i>
+                            Add Product<i class="bi bi-plus"></i>
                         </a>
 
                         <hr>

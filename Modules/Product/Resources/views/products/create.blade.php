@@ -102,6 +102,21 @@
                             </div>
 
                             <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="product_mf_date">Manufactured Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="product_mf_date" name="product_mf_date" required value="{{ old('product_mf_date') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="product_exp_date">Expired Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="product_exp_date" name="product_exp_date" required value="{{ old('product_exp_date') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="product_order_tax">Tax (%)</label>
