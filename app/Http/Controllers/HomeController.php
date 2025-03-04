@@ -17,75 +17,33 @@ use Modules\SalesReturn\Entities\SaleReturnPayment;
 class HomeController extends Controller
 {
 
-    // public function index() {
-    //     $sales = Sale::completed()->sum('total_amount');
-    //     $sale_returns = SaleReturn::completed()->sum('total_amount');
-    //     $purchase_returns = PurchaseReturn::completed()->sum('total_amount');
-    //     $product_costs = 0;
-
-    //     foreach (Sale::completed()->with('saleDetails')->get() as $sale) {
-    //         foreach ($sale->saleDetails as $saleDetail) {
-    //             if (!is_null($saleDetail->product)) {
-    //                 $product_costs += $saleDetail->product->product_cost * $saleDetail->quantity;
-    //             }
-    //         }
-    //     }
-
-    //     $revenue = ($sales - $sale_returns) / 100;
-    //     $profit = $revenue - $product_costs;
-
-    //     return view('home', [
-    //         'revenue'          => $revenue,
-    //         'sale_returns'     => $sale_returns / 100,
-    //         'purchase_returns' => $purchase_returns / 100,
-    //         'profit'           => $profit
-    //     ]);
-    // }
-
-    // public function index()
-    // {
-    //     $sales = Sale::completed()->sum('total_amount');
-    //     $sale_returns = SaleReturn::completed()->sum('total_amount');
-    //     $purchase_returns = PurchaseReturn::completed()->sum('total_amount');
-    //     $product_costs = 0;
-    //     $return_costs = 0;
-
-    //     foreach (Sale::completed()->with('saleDetails')->get() as $sale) {
-    //         foreach ($sale->saleDetails as $saleDetail) {
-    //             if (!is_null($saleDetail->product)) {
-    //                 $product_costs += $saleDetail->product->product_cost * $saleDetail->quantity;
-    //             }
-    //         }
-    //     }
-
-    //     foreach (SaleReturn::completed()->with('saleReturnDetails')->get() as $saleReturn) {
-    //         foreach ($saleReturn->saleReturnDetails as $saleReturnDetail) {
-    //             if (!is_null($saleReturnDetail->product)) {
-    //                 $return_costs += $saleReturnDetail->product->product_cost * $saleReturnDetail->quantity;
-    //             }
-    //         }
-    //     }
-
-    //     $revenue = ($sales - $sale_returns) / 100;
-    //     $profit = $revenue - ($product_costs - $return_costs);
-
-    //     return view('home', [
-    //         'revenue'          => $revenue,
-    //         'sale_returns'     => $sale_returns / 100,
-    //         'purchase_returns' => $purchase_returns / 100,
-    //         'profit'           => $profit
-    //     ]);
-    // }
-
     public function index()
     {
-        $sales = Sale::completed()->sum('total_amount');
-        $sale_returns = SaleReturn::completed()->sum('total_amount');
-        $purchase_returns = PurchaseReturn::completed()->sum('total_amount');
+        $currentTime = Carbon::now();
+        $todayStart = Carbon::today();
+        $yesterdayEnd = $todayStart->copy()->subSecond();
+
+        $sales = Sale::completed()
+            ->whereDate('created_at', $currentTime->toDateString())
+            ->sum('total_amount');
+
+        $sale_returns = SaleReturn::completed()
+            ->whereDate('created_at', $currentTime->toDateString())
+            ->sum('total_amount');
+
+        $purchase_returns = PurchaseReturn::completed()
+            ->whereDate('created_at', $currentTime->toDateString())
+            ->sum('total_amount');
+
         $product_costs = 0;
         $return_costs = 0;
 
-        foreach (Sale::completed()->with('saleDetails')->get() as $sale) {
+        foreach (
+            Sale::completed()
+                ->whereDate('created_at', $currentTime->toDateString())
+                ->with('saleDetails')
+                ->get() as $sale
+        ) {
             foreach ($sale->saleDetails as $saleDetail) {
                 if (!is_null($saleDetail->product)) {
                     $product_costs += $saleDetail->product->product_cost * $saleDetail->quantity;
@@ -93,7 +51,12 @@ class HomeController extends Controller
             }
         }
 
-        foreach (SaleReturn::completed()->with('saleReturnDetails')->get() as $saleReturn) {
+        foreach (
+            SaleReturn::completed()
+                ->whereDate('created_at', $currentTime->toDateString())
+                ->with('saleReturnDetails')
+                ->get() as $saleReturn
+        ) {
             foreach ($saleReturn->saleReturnDetails as $saleReturnDetail) {
                 if (!is_null($saleReturnDetail->product)) {
                     $return_costs += $saleReturnDetail->product->product_cost * $saleReturnDetail->quantity;
@@ -108,7 +71,8 @@ class HomeController extends Controller
             'revenue'          => $revenue,
             'sale_returns'     => $sale_returns / 100,
             'purchase_returns' => $purchase_returns / 100,
-            'profit'           => $profit
+            'profit'           => $profit,
+            'currentTime'      => $currentTime->format('Y-m-d H:i:s')
         ]);
     }
 
