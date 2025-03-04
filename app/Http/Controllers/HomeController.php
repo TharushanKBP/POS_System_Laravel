@@ -72,7 +72,6 @@ class HomeController extends Controller
             'sale_returns'     => $sale_returns / 100,
             'purchase_returns' => $purchase_returns / 100,
             'profit'           => $profit,
-            'currentTime'      => $currentTime->format('Y-m-d H:i:s')
         ]);
     }
 
